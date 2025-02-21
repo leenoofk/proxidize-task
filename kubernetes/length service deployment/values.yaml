@@ -1,0 +1,20 @@
+lengthservice:
+  enabled: true
+  replicas: 1
+  deploymentStrategy: RollingUpdate
+  RollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  service_name: "length-service"
+  containerPort: 8081
+  image:
+    repository: "leenfarehan/length-service"
+    tag: "latest"
+    imagePullPolicy: Always
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"

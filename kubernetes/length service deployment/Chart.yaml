@@ -1,0 +1,6 @@
+apiVersion: v2
+name: Length Service
+version: 1.0.0
+maintainers:
+  - name: leen alkaraki
+    email: leen.a@usclarity.com

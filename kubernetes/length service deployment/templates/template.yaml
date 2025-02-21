@@ -1,0 +1,62 @@
+### Length Service Namespace
+{{- if .Values.lengthservice.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.lengthservice.service_name }}
+---
+### Length Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.lengthservice.service_name }}
+  namespace: {{ .Values.lengthservice.service_name }}
+  labels:
+    app: {{ .Values.lengthservice.service_name }}
+spec:
+  replicas: {{ .Values.lengthservice.replicas }}
+  revisionHistoryLimit: 10
+  strategy:
+    type: {{ .Values.lengthservice.deploymentStrategy }}
+  selector:
+    matchLabels:
+      app: {{ .Values.lengthservice.service_name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.lengthservice.service_name }}
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: {{ .Values.lengthservice.service_name }}
+        image: {{ .Values.lengthservice.image.repository }}:{{ .Values.lengthservice.image.tag }}
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: {{ .Values.lengthservice.resources.limits.memory }}
+            cpu: {{ .Values.lengthservice.resources.limits.cpu }}
+          requests:
+            memory: {{ .Values.lengthservice.resources.requests.memory }}
+            cpu: {{ .Values.lengthservice.resources.requests.cpu }}
+        ports:
+        - containerPort: {{ .Values.lengthservice.containerPort }}
+        env:
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            value: "http://otel-collector:4318"
+          - name: OTEL_SERVICE_NAME
+            value: {{ .Values.lengthservice.service_name }}
+---
+### Length Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.lengthservice.service_name }}
+  namespace: {{ .Values.lengthservice.service_name }}
+spec:
+  selector:
+    app: {{ .Values.lengthservice.service_name }}
+  ports:
+    - name: {{ .Values.lengthservice.service_name }}
+      port: {{ .Values.lengthservice.containerPort }}
+      targetPort: {{ .Values.lengthservice.containerPort }}
+{{- end }}

@@ -1,0 +1,13 @@
+This directory contains all of the necessary files to install the hashing service: namespace, deployment file and service file, in a cloud native way using helm chart.
+
+to install the helm chart:
+helm upgrade --install length-service .
+
+now port forward the service so you can be able to use it on your local terminal:
+kubectl port-forward svc/length-service 8081:8081 -n length-service
+
+now your service is up and running and you can use it to calculate the length of whatever string you want!
+example:
+curl -X POST http://localhost:8081/hash -d "Apple" 
+result:
+5

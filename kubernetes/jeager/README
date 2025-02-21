@@ -1,0 +1,21 @@
+deploy jaeger on your kubernetes cluster as a helm chart:
+1- create monitoring namespace -if it doesn't exist-:
+  kubectl create namespace monitoring 
+
+2- add the helm chart:
+  helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+
+3- install the helm chart using the values file (this is just a POC, so we will not be using cassandra):
+  helm install jaeger jaegertracing/jaeger -n monitoring -f values.yaml
+
+4- port forward your service:
+  export POD_NAME=$(kubectl get pods --namespace monitoring -l "app.kubernetes.io/instance=jaeger,app.kubernetes.io/component=query" -o jsonpath="{.items[0].metadata.name}")
+  echo http://127.0.0.1:8080/
+  kubectl port-forward --namespace monitoring $POD_NAME 8080:16686
+
+5- now you can access jaeger UI on:
+  http://127.0.0.1:8080/
+
+(Optional: deploy Grafana and add jaeger as a data source and create dashboards)
+
+** HAPPY TRACING **

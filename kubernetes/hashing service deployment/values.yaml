@@ -1,0 +1,20 @@
+hashingservice:
+  enabled: true
+  replicas: 1
+  deploymentStrategy: RollingUpdate
+  RollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  service_name: "hashing-service"
+  containerPort: 8080
+  image:
+    repository: "leenfarehan/hashing-service"
+    tag: "latest"
+    imagePullPolicy: Always
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"

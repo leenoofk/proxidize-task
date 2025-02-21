@@ -1,0 +1,73 @@
+### Hashing Service Deployment
+{{- if .Values.hashingservice.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.hashingservice.service_name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.hashingservice.service_name }}
+  namespace: {{ .Values.hashingservice.service_name }}
+  labels:
+    app: {{ .Values.hashingservice.service_name }}
+spec:
+  replicas: {{ .Values.hashingservice.replicas }}
+  revisionHistoryLimit: 10
+  strategy:
+    type: {{ .Values.hashingservice.deploymentStrategy }}
+  selector:
+    matchLabels:
+      app: {{ .Values.hashingservice.service_name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.hashingservice.service_name }}
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: {{ .Values.hashingservice.service_name }}
+        image: {{ .Values.hashingservice.image.repository }}:{{ .Values.hashingservice.image.tag }}
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: {{ .Values.hashingservice.resources.limits.memory }}
+            cpu: {{ .Values.hashingservice.resources.limits.cpu }}
+          requests:
+            memory: {{ .Values.hashingservice.resources.requests.memory }}
+            cpu: {{ .Values.hashingservice.resources.requests.cpu }}
+        command: ["opentelemetry-instrument", "python3", "main.py"]
+        # args:
+          # - "--traces_exporter=console,otlp"
+          # - "--metrics_exporter=console"
+          # - "--service_name=hashing-service"
+          # - "--exporter_otlp_endpoint=opentelemetry-opentelemetry-collector.monitoring.svc.cluster.local:4317"
+          # - "python3"
+          # - "main.py" 
+        ports:
+        - containerPort: {{ .Values.hashingservice.containerPort }}
+        env:
+          - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+            value: http://opentelemetry-opentelemetry-collector.monitoring.svc.cluster.local:4317
+          - name: OTEL_SERVICE_NAME
+            value: {{ .Values.hashingservice.service_name }}
+          - name: OTEL_TRACES_EXPORTER
+            value: otlp,console
+          - name: OTEL_METRICS_EXPORTER
+            value: console
+---
+### hashingservice Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.hashingservice.service_name }}
+  namespace: {{ .Values.hashingservice.service_name }}
+spec:
+  selector:
+    app: {{ .Values.hashingservice.service_name }}
+  ports:
+    - name: {{ .Values.hashingservice.service_name }}
+      port: {{ .Values.hashingservice.containerPort }}
+      targetPort: {{ .Values.hashingservice.containerPort }}
+{{- end }}

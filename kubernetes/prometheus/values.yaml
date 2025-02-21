@@ -1,0 +1,22 @@
+server:
+  enabled: true 
+  persistentVolume:
+    enabled: true  
+
+alertmanager:
+  enabled: false 
+
+pushgateway:
+  enabled: false 
+
+service:
+  type: ClusterIP 
+
+serviceMonitor:
+  enabled: true  
+  namespaceSelector:
+    any: true 
+
+prometheusSpec:
+  scrapeInterval: 15s 
+  retention: 7d 

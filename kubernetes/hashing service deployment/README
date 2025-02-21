@@ -1,0 +1,13 @@
+This directory contains all of the necessary files to install the hashing service: namespace, deployment file and service file, in a cloud native way using helm chart.
+
+to install the helm chart:
+helm upgrade --install hashing-service .
+
+now port forward the service so you can be able to use it on your local terminal:
+kubectl port-forward svc/hashing-service 8080:8080 -n hashing-service
+
+now your service is up and running and you can use it to hash whatever string you want!
+example:
+curl -X POST http://localhost:8080/hash -d "Apple" 
+result:
+f223faa96f22916294922b171a2696d868fd1f9129302eb41a45b2a2ea2ebbfd
