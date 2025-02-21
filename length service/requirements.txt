@@ -1,4 +1,3 @@
 opentelemetry-instrumentation
-opentelemetry-instrumentation-http
-opentelemetry-instrumentation-requests
-opentelemetry-instrumentation-wsgi
+opentelemetry-distro
+opentelemetry-exporter-otlp
