@@ -40,11 +40,25 @@ spec:
             cpu: {{ .Values.lengthservice.resources.requests.cpu }}
         ports:
         - containerPort: {{ .Values.lengthservice.containerPort }}
+        command: ["opentelemetry-instrument", "python3", "main.py"]
+        # args:
+          # - "--traces_exporter=console,otlp"
+          # - "--metrics_exporter=console"
+          # - "--service_name=hashing-service"
+          # - "--exporter_otlp_endpoint=opentelemetry-opentelemetry-collector.monitoring.svc.cluster.local:4317"
+          # - "python3"
+          # - "main.py" 
+        ports:
+        - containerPort: {{ .Values.hashingservice.containerPort }}
         env:
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: "http://otel-collector:4318"
+          - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+            value: http://opentelemetry-opentelemetry-collector.monitoring.svc.cluster.local:4317
           - name: OTEL_SERVICE_NAME
-            value: {{ .Values.lengthservice.service_name }}
+            value: {{ .Values.hashingservice.service_name }}
+          - name: OTEL_TRACES_EXPORTER
+            value: otlp,console
+          - name: OTEL_METRICS_EXPORTER
+            value: console
 ---
 ### Length Service
 apiVersion: v1
